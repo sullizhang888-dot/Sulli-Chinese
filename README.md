@@ -1,2 +1,671 @@
 # Sulli-Chinese
 成功之路 顺利篇 第十七课  你跑得比我快多了
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📚 在线练习 · 第17课</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        body { background:#f4f7fc; min-height:100vh; padding:20px; display:flex; justify-content:center; }
+        .app { max-width:900px; width:100%; background:white; border-radius:28px; box-shadow:0 12px 40px rgba(0,0,0,0.06); padding:30px; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:2px solid #edf2f7; padding-bottom:16px; }
+        .header h1 { font-size:24px; font-weight:700; color:#1a2634; }
+        .header h1 span { background:#2a6fdb; color:white; font-size:14px; padding:0 14px; border-radius:30px; line-height:28px; margin-left:10px; }
+        .student-badge { background:#edf2f7; padding:6px 18px; border-radius:40px; font-size:14px; color:#2a6fdb; font-weight:600; }
+        .steps { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; border-bottom:1px solid #eef3f9; padding-bottom:14px; }
+        .step-btn { padding:8px 20px; border-radius:40px; border:none; background:transparent; color:#8a9aa8; font-weight:600; font-size:14px; cursor:pointer; transition:0.2s; }
+        .step-btn.active { background:#2a6fdb; color:white; box-shadow:0 4px 12px rgba(42,111,219,0.25); }
+        .step-btn.done { color:#27ae60; }
+        .step-btn.done::after { content:" ✓"; }
+        .step-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .panel { display:none; animation:fade 0.3s ease; }
+        .panel.active { display:block; }
+        @keyframes fade { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .card { background:#fafcff; border-radius:18px; padding:20px 24px; border:1px solid #e6edf6; margin-bottom:16px; }
+        .card-title { font-size:16px; font-weight:700; color:#1a2634; margin-bottom:12px; display:flex; gap:8px; align-items:center; }
+        .card-title .tag { background:#d4e4ff; color:#2a6fdb; font-size:12px; padding:0 12px; border-radius:30px; line-height:22px; font-weight:600; }
+        .form-group { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:16px; align-items:center; }
+        .form-group label { font-weight:600; color:#4a5b6e; min-width:60px; font-size:15px; }
+        .form-group input { padding:10px 16px; border:1.5px solid #dce4ed; border-radius:12px; font-size:15px; background:white; flex:1; min-width:180px; outline:none; }
+        .form-group input:focus { border-color:#2a6fdb; box-shadow:0 0 0 3px rgba(42,111,219,0.1); }
+        .text-block { font-size:15px; line-height:1.9; color:#1f2a3a; white-space:pre-wrap; }
+        .text-block .emphasis { background:#d4e4ff; padding:2px 10px; border-radius:6px; font-weight:600; }
+        .blank-input { border:none; border-bottom:2.5px dashed #2a6fdb; background:transparent; font-size:16px; font-weight:500; color:#1a2634; width:120px; padding:0 6px; outline:none; }
+        .blank-input:focus { border-bottom-color:#6c5ce7; border-bottom-style:solid; }
+        .blank-input.correct { border-bottom-color:#27ae60; color:#27ae60; }
+        .blank-input.wrong { border-bottom-color:#e74c3c; color:#e74c3c; }
+        .blank-input.short { width:70px; }
+        .vocab-row { display:flex; align-items:center; gap:20px; margin-bottom:14px; flex-wrap:wrap; }
+        .vocab-word { font-weight:600; font-size:18px; min-width:80px; }
+        .vocab-select { padding:8px 12px; border:1.5px solid #dce4ed; border-radius:8px; font-size:15px; background:white; flex:1; min-width:150px; outline:none; }
+        .vocab-select:focus { border-color:#2a6fdb; }
+        .vocab-select.correct { border-color:#27ae60; background:#eafaf1; }
+        .vocab-select.wrong { border-color:#e74c3c; background:#fdedec; }
+        .vocab-feedback { font-size:14px; margin-left:10px; }
+        .btn { padding:12px 36px; border:none; border-radius:40px; font-weight:700; font-size:16px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:8px; }
+        .btn-primary { background:#2a6fdb; color:white; box-shadow:0 4px 14px rgba(42,111,219,0.25); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(42,111,219,0.3); }
+        .btn-primary:disabled { opacity:0.5; transform:none; cursor:not-allowed; }
+        .btn-outline { background:transparent; color:#4a5b6e; border:2px solid #dce4ed; }
+        .btn-outline:hover { border-color:#2a6fdb; color:#2a6fdb; }
+        .action-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-top:28px; padding-top:20px; border-top:2px solid #edf2f7; gap:14px; }
+        .report-card { background:white; border-radius:20px; border:1px solid #e6edf6; padding:24px 28px; margin-top:10px; }
+        .report-card .score-big { font-size:42px; font-weight:800; color:#2a6fdb; }
+        .report-card .score-big small { font-size:18px; font-weight:400; color:#6a7b8c; }
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:14px; margin:16px 0; }
+        .stat-item { background:#f7faff; border-radius:14px; padding:12px 16px; text-align:center; }
+        .stat-item .num { font-size:26px; font-weight:700; }
+        .stat-item .label { font-size:13px; color:#6a7b8c; }
+        .mistake-list { list-style:none; padding:0; }
+        .mistake-list li { padding:8px 14px; background:#fdf5f4; border-left:4px solid #e74c3c; border-radius:8px; margin-bottom:6px; font-size:14px; line-height:1.6; }
+        .mistake-list li.good { background:#f0faf4; border-left-color:#27ae60; }
+        .teacher-panel { margin-top:30px; border-top:2px dashed #dce4ed; padding-top:24px; }
+        .teacher-panel table { width:100%; border-collapse:collapse; font-size:14px; margin-top:12px; }
+        .teacher-panel th, .teacher-panel td { padding:10px 12px; border:1px solid #e6edf6; text-align:left; }
+        .teacher-panel th { background:#f7faff; font-weight:600; color:#1a2634; }
+        .text-muted { color:#6a7b8c; font-size:14px; }
+        .mt-8 { margin-top:8px; }
+        .hidden { display:none !important; }
+        .pron-table { width:100%; border-collapse:collapse; margin-top:8px; }
+        .pron-table th, .pron-table td { border:1px solid #dce4ed; padding:8px 12px; text-align:left; vertical-align:middle; }
+        .pron-table th { background:#f7faff; font-weight:600; color:#1a2634; }
+        .pron-table input[type="text"], .pron-table input[type="number"] { width:100%; padding:6px 8px; border:1px solid #dce4ed; border-radius:6px; font-size:14px; background:white; }
+        .pron-table input[type="checkbox"] { width:18px; height:18px; cursor:pointer; }
+        .pron-table .del-btn { background:#e74c3c; color:white; border:none; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:13px; }
+        .pron-table .del-btn:hover { background:#c0392b; }
+        @media (max-width:600px) {
+            .app { padding:18px 14px; }
+            .header h1 { font-size:20px; }
+            .step-btn { padding:6px 14px; font-size:13px; }
+            .card { padding:16px; }
+            .blank-input { width:80px; font-size:15px; }
+            .vocab-row { gap:10px; }
+            .vocab-word { font-size:16px; min-width:60px; }
+            .btn { padding:10px 20px; font-size:15px; }
+            .report-card { padding:18px 16px; }
+            .stat-grid { grid-template-columns:1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <header class="header">
+        <h1>📖 在线练习 <span>第17课</span></h1>
+        <div class="student-badge" id="studentBadge">👤 未登录</div>
+    </header>
+
+    <nav class="steps" id="stepNav">
+        <button class="step-btn active" data-step="0" onclick="goToStep(0)">1. 信息</button>
+        <button class="step-btn" data-step="1" disabled onclick="goToStep(1)">2. 课文</button>
+        <button class="step-btn" data-step="2" disabled onclick="goToStep(2)">3. 生词</button>
+        <button class="step-btn" data-step="3" disabled onclick="goToStep(3)">4. 语法</button>
+        <button class="step-btn" data-step="4" disabled onclick="goToStep(4)">5. 智言纠音</button>
+        <button class="step-btn" data-step="5" disabled onclick="goToStep(5)">6. 笔记</button>
+    </nav>
+
+    <div id="panels">
+        <!-- 步骤0 -->
+        <div class="panel active" data-step="0">
+            <div class="card">
+                <div class="card-title">👤 学生信息</div>
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" id="studentName" placeholder="请输入你的名字" value="">
+                </div>
+                <div class="form-group">
+                    <label>班级</label>
+                    <input type="text" id="studentClass" placeholder="例如：CLT004" value="CLT004">
+                </div>
+                <div class="form-group">
+                    <label>日期</label>
+                    <input type="date" id="studentDate">
+                </div>
+                <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="startPractice()">🚀 开始练习</button>
+                </div>
+                <p class="text-muted mt-8">* 信息将用于生成你的专属学习笔记。</p>
+            </div>
+            <div style="text-align:right;margin-top:10px;">
+                <button class="btn btn-outline" onclick="toggleTeacher()">📊 教师后台</button>
+            </div>
+            <div id="teacherPanel" class="teacher-panel hidden">
+                <h3 style="display:flex;gap:8px;align-items:center;">📊 学生数据统计 <button class="btn btn-outline" style="padding:4px 16px;font-size:13px;" onclick="exportCSV()">📥 导出CSV</button></h3>
+                <div id="teacherTableWrap"><p class="text-muted">暂无数据</p></div>
+            </div>
+        </div>
+
+        <!-- 步骤1 -->
+        <div class="panel" data-step="1">
+            <div class="card">
+                <div class="card-title">📖 课文理解 <span class="tag">阅读</span></div>
+                <div class="text-block" id="textContent"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">💬 回答问题</div>
+                <div id="textQuestions"></div>
+            </div>
+            <div class="action-bar">
+                <div></div>
+                <button class="btn btn-primary" onclick="goToStep(2)">下一步 →</button>
+            </div>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="panel" data-step="2">
+            <div class="card">
+                <div class="card-title">📚 生词匹配 <span class="tag">选择拼音</span></div>
+                <p class="text-muted">为每个生词选择正确的拼音。</p>
+                <div id="vocabMatch"></div>
+            </div>
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="goToStep(1)">← 返回</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">下一步 →</button>
+            </div>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="panel" data-step="3">
+            <div class="card">
+                <div class="card-title">📐 语言点 <span class="tag">带状态补语的“比”字句</span></div>
+                <div class="text-block" style="background:#f7faff;padding:12px 16px;border-radius:12px;margin-bottom:12px;">
+                    <span class="emphasis">A + V + 得 + 比 + B + Adj</span>  &nbsp; 或 &nbsp;  <span class="emphasis">A + 比 + B + V + 得 + Adj</span>
+                </div>
+                <div id="grammarPractice"></div>
+            </div>
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="goToStep(2)">← 返回</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">下一步 →</button>
+            </div>
+        </div>
+
+        <!-- 步骤4 -->
+        <div class="panel" data-step="4">
+            <div class="card">
+                <div class="card-title">🎤 智言纠音 <span class="tag">记录读错的字</span></div>
+                <p class="text-muted">根据课堂朗读，记录你读错的汉字、正确读音、标红次数，并标记是否已改正。</p>
+                <table class="pron-table" id="pronTable">
+                    <thead>
+                        <tr><th style="width:25%;">读错的字</th><th style="width:25%;">正确读音</th><th style="width:20%;">标红几次</th><th style="width:20%;">改对了 ✓</th><th style="width:10%;">操作</th></tr>
+                    </thead>
+                    <tbody id="pronTbody"></tbody>
+                </table>
+                <button class="btn btn-outline" style="margin-top:12px;" onclick="addPronRow()">➕ 添加一行</button>
+            </div>
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="goToStep(3)">← 返回</button>
+                <button class="btn btn-primary" onclick="goToStep(5)">生成笔记 →</button>
+            </div>
+        </div>
+
+        <!-- 步骤5 -->
+        <div class="panel" data-step="5">
+            <div class="report-card" id="finalReport">
+                <h2 style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">📝 我的专属学习笔记</h2>
+                <div id="reportContent"></div>
+            </div>
+            <div class="action-bar" style="border-top:none;padding-top:10px;">
+                <button class="btn btn-outline" onclick="goToStep(4)">← 返回</button>
+                <button class="btn btn-success" onclick="resetAll()">🔄 重新练习</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    //  📦 数据配置
+    // ================================================================
+    const DATA = {
+        text: `早上，麦克在操场上跑步，看见山本来晚了……
+麦克：山本，你怎么现在才来？我以为你不来了呢。
+山本：昨天咳嗽咳得很厉害，晚上没睡好，今天比平时起得晚了一点儿。
+麦克：你怎么了？感冒了吗？
+山本：不是，医生说我抽烟抽得太多了。
+麦克：抽烟对身体没有好处，你还是少抽一点儿吧。
+山本：医生也劝我少抽烟，多锻炼。对了，学校的运动会你报名了吗？
+麦克：没有。我当拉拉队队员，给同学们加油。
+山本：我觉得你跑步跑得比我们都快，不报名太可惜了。
+麦克：跑步我不行，大卫跑得比我快多了。游泳我拿手，可惜没有游泳比赛。
+山本：我也是。我网球打得还可以，要是有网球比赛就好了。
+麦克：是吗？我也喜欢打网球，下午咱们俩打一场，怎么样？
+山本：行。`,
+
+        vocab: [
+            { word: '以为', pinyin: 'yǐwéi' },
+            { word: '医生', pinyin: 'yīshēng' },
+            { word: '抽烟', pinyin: 'chōu yān' },
+            { word: '好处', pinyin: 'hǎochù' },
+            { word: '运动会', pinyin: 'yùndònghuì' },
+            { word: '报名', pinyin: 'bào míng' },
+            { word: '当', pinyin: 'dāng' },
+            { word: '拉拉队', pinyin: 'lālāduì' },
+            { word: '队员', pinyin: 'duìyuán' },
+            { word: '可惜', pinyin: 'kěxī' },
+            { word: '网球', pinyin: 'wǎngqiú' },
+            { word: '还可以', pinyin: 'hái kěyǐ' },
+            { word: '场', pinyin: 'chǎng' }
+        ],
+
+        textQuestions: [
+            { id: 'tq1', text: '山本今天为什么来晚了？', answer: '昨天咳嗽咳得很厉害，晚上没睡好。' },
+            { id: 'tq2', text: '山本为什么咳嗽？', answer: '医生说他抽烟抽得太多了。' },
+            { id: 'tq3', text: '医生劝山本怎么做？', answer: '少抽烟，多锻炼。' },
+            { id: 'tq4', text: '运动会麦克报名了吗？他做什么？', answer: '没有。他当拉拉队队员。' },
+            { id: 'tq5', text: '山本觉得麦克应该参加什么比赛？为什么？', answer: '跑步，因为山本觉得麦克跑得比他们都快。' }
+        ],
+
+        grammarItems: [
+            { id: 'g1', text: '玛丽来得比我____。（早/晚）', answer: '早' },
+            { id: 'g2', text: '大卫跑得比麦克____多了。（快/慢）', answer: '快' },
+            { id: 'g3', text: '麦克网球打得还可以，但是____大卫打得好。（不如/比）', answer: '不如' },
+            { id: 'g4', text: '我(写)汉字写得没(有)玛丽____。（快/慢）', answer: '快' }
+        ]
+    };
+
+    // ================================================================
+    //  🧠 应用状态
+    // ================================================================
+    const state = {
+        student: { name: '', class: '', date: '' },
+        textAnswers: {},
+        textCorrect: {},
+        vocabSelections: {}, // { index: selectedPinyin }
+        vocabCorrect: {},    // { index: true/false }
+        grammarAnswers: {},
+        grammarCorrect: {},
+        pronErrors: [],
+        currentStep: 0,
+        submitted: false,
+    };
+
+    // ================================================================
+    //  🔧 工具函数
+    // ================================================================
+    function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    function saveStudentData() {
+        const all = JSON.parse(localStorage.getItem('studentPracticeData') || '[]');
+        const idx = all.findIndex(d => d.name === state.student.name && d.class === state.student.class);
+        const record = {
+            name: state.student.name,
+            class: state.student.class,
+            date: state.student.date || new Date().toISOString().slice(0, 10),
+            scores: {
+                text: Object.values(state.textCorrect).filter(v => v).length,
+                grammar: Object.values(state.grammarCorrect).filter(v => v).length,
+                vocab: Object.values(state.vocabCorrect).filter(v => v).length,
+            },
+            pronCount: state.pronErrors.length,
+            total: 0,
+            timestamp: new Date().toISOString()
+        };
+        record.total = record.scores.text + record.scores.grammar + record.scores.vocab;
+        if (idx !== -1) all[idx] = record;
+        else all.push(record);
+        localStorage.setItem('studentPracticeData', JSON.stringify(all));
+    }
+
+    function loadAllStudents() { return JSON.parse(localStorage.getItem('studentPracticeData') || '[]'); }
+
+    function renderTeacherTable() {
+        const data = loadAllStudents();
+        const wrap = document.getElementById('teacherTableWrap');
+        if (!data.length) { wrap.innerHTML = '<p class="text-muted">暂无学生数据</p>'; return; }
+        let html = `<table><thead><tr><th>姓名</th><th>班级</th><th>日期</th><th>课文</th><th>生词</th><th>语法</th><th>纠音数</th><th>总分</th></tr></thead><tbody>`;
+        data.forEach(d => {
+            html += `<tr><td>${d.name}</td><td>${d.class}</td><td>${d.date}</td>
+                    <td>${d.scores.text}</td><td>${d.scores.vocab}</td>
+                    <td>${d.scores.grammar}</td><td>${d.pronCount}</td>
+                    <td><strong>${d.total}</strong></td></tr>`;
+        });
+        html += `</tbody></table>`;
+        wrap.innerHTML = html;
+    }
+
+    // ================================================================
+    //  🖌 渲染函数
+    // ================================================================
+
+    function renderText() {
+        const container = document.getElementById('textContent');
+        container.innerHTML = DATA.text.replace(/\n/g, '<br>');
+        const qContainer = document.getElementById('textQuestions');
+        let html = '';
+        DATA.textQuestions.forEach((q, idx) => {
+            const val = state.textAnswers[q.id] || '';
+            const isCorrect = state.textCorrect[q.id];
+            const cls = state.submitted ? (isCorrect ? 'correct' : 'wrong') : '';
+            html += `
+                <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #edf2f7;">
+                    <div style="font-weight:600;font-size:15px;margin-bottom:4px;">${idx+1}. ${q.text}</div>
+                    <input class="blank-input" style="width:80%;max-width:400px;" type="text" data-id="${q.id}" value="${val}" ${state.submitted ? 'disabled' : ''} oninput="updateTextAnswer(this)">
+                    ${state.submitted && !isCorrect ? `<span style="color:#e74c3c;margin-left:12px;font-size:14px;">👉 ${q.answer}</span>` : ''}
+                    ${state.submitted && isCorrect ? ' ✅' : ''}
+                </div>
+            `;
+        });
+        qContainer.innerHTML = html;
+    }
+
+    function updateTextAnswer(el) {
+        state.textAnswers[el.dataset.id] = el.value;
+    }
+
+    // ----- 生词匹配（下拉选择）-----
+    function renderVocab() {
+        const container = document.getElementById('vocabMatch');
+        const pairs = DATA.vocab;
+        // 构建拼音列表（打乱顺序）
+        const allPinyins = shuffle(pairs.map(p => p.pinyin));
+
+        let html = '';
+        pairs.forEach((item, index) => {
+            const selected = state.vocabSelections[index] || '';
+            const isCorrect = state.vocabCorrect[index];
+            let cls = 'vocab-select';
+            let feedback = '';
+            if (state.submitted) {
+                if (isCorrect) {
+                    cls += ' correct';
+                    feedback = ' ✅';
+                } else {
+                    cls += ' wrong';
+                    feedback = ` ❌ 正确：${item.pinyin}`;
+                }
+            }
+            html += `
+                <div class="vocab-row">
+                    <div class="vocab-word">${item.word}</div>
+                    <select class="${cls}" data-index="${index}" ${state.submitted ? 'disabled' : ''} onchange="updateVocabSelect(this)">
+                        <option value="">-- 请选择 --</option>
+                        ${allPinyins.map(p => `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`).join('')}
+                    </select>
+                    <span class="vocab-feedback">${feedback}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function updateVocabSelect(el) {
+        const index = parseInt(el.dataset.index);
+        state.vocabSelections[index] = el.value;
+    }
+
+    // ----- 语法 -----
+    function renderGrammar() {
+        const container = document.getElementById('grammarPractice');
+        let html = '';
+        DATA.grammarItems.forEach((q, idx) => {
+            const val = state.grammarAnswers[q.id] || '';
+            const isCorrect = state.grammarCorrect[q.id];
+            const cls = state.submitted ? (isCorrect ? 'correct' : 'wrong') : '';
+            const displayText = q.text.replace(/____/g, '______');
+            const parts = displayText.split('______');
+            let finalHtml = '';
+            for (let i = 0; i < parts.length; i++) {
+                finalHtml += parts[i];
+                if (i < parts.length - 1) {
+                    finalHtml += `<input class="blank-input short ${cls}" type="text" data-id="${q.id}" value="${val}" ${state.submitted ? 'disabled' : ''} oninput="updateGrammarAnswer(this)">`;
+                }
+            }
+            html += `
+                <div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #edf2f7;">
+                    <div style="font-weight:500;">${idx+1}. ${finalHtml}</div>
+                    ${state.submitted && !isCorrect ? `<span style="color:#e74c3c;font-size:14px;">👉 正确答案：${q.answer}</span>` : ''}
+                    ${state.submitted && isCorrect ? ' ✅' : ''}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function updateGrammarAnswer(el) {
+        state.grammarAnswers[el.dataset.id] = el.value;
+    }
+
+    // ----- 智言纠音 -----
+    function renderPron() {
+        const tbody = document.getElementById('pronTbody');
+        if (!state.pronErrors.length) {
+            state.pronErrors.push({ id: Date.now(), wrongChar: '', correctPinyin: '', redCount: 1, corrected: false });
+        }
+        let html = '';
+        state.pronErrors.forEach((item, index) => {
+            html += `
+                <tr data-index="${index}">
+                    <td><input type="text" class="pron-wrong" value="${item.wrongChar}" placeholder="例：得" data-idx="${index}" oninput="updatePron(this)"></td>
+                    <td><input type="text" class="pron-pinyin" value="${item.correctPinyin}" placeholder="例：de" data-idx="${index}" oninput="updatePron(this)"></td>
+                    <td><input type="number" class="pron-count" value="${item.redCount}" min="1" data-idx="${index}" style="width:70px;" oninput="updatePron(this)"></td>
+                    <td><input type="checkbox" class="pron-corrected" ${item.corrected ? 'checked' : ''} data-idx="${index}" onchange="updatePron(this)"></td>
+                    <td><button class="del-btn" onclick="delPronRow(this)" data-idx="${index}">删除</button></td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function updatePron(el) {
+        const idx = parseInt(el.dataset.idx);
+        const row = el.closest('tr');
+        const wrong = row.querySelector('.pron-wrong').value;
+        const pinyin = row.querySelector('.pron-pinyin').value;
+        const count = parseInt(row.querySelector('.pron-count').value) || 1;
+        const corrected = row.querySelector('.pron-corrected').checked;
+        state.pronErrors[idx] = { ...state.pronErrors[idx], wrongChar: wrong, correctPinyin: pinyin, redCount: count, corrected: corrected };
+    }
+
+    function delPronRow(btn) {
+        const idx = parseInt(btn.dataset.idx);
+        if (state.pronErrors.length > 1) {
+            state.pronErrors.splice(idx, 1);
+            renderPron();
+        } else {
+            alert('至少保留一行，可清空内容。');
+        }
+    }
+
+    function addPronRow() {
+        state.pronErrors.push({ id: Date.now(), wrongChar: '', correctPinyin: '', redCount: 1, corrected: false });
+        renderPron();
+    }
+
+    // ================================================================
+    //  📊 生成报告
+    // ================================================================
+    function generateReport() {
+        const container = document.getElementById('reportContent');
+        const name = state.student.name || '同学';
+        const cls = state.student.class || 'CLT004';
+        const date = state.student.date || new Date().toISOString().slice(0, 10);
+
+        const textScore = DATA.textQuestions.filter(q => state.textCorrect[q.id]).length;
+        const grammarScore = DATA.grammarItems.filter(q => state.grammarCorrect[q.id]).length;
+        const vocabScore = Object.values(state.vocabCorrect).filter(v => v).length;
+        const total = textScore + grammarScore + vocabScore;
+        const max = DATA.textQuestions.length + DATA.grammarItems.length + DATA.vocab.length;
+
+        const mistakes = [];
+        DATA.textQuestions.forEach(q => { if (!state.textCorrect[q.id]) mistakes.push(`📖 课文：${q.text} —— 正确答案：${q.answer}`); });
+        DATA.grammarItems.forEach(q => { if (!state.grammarCorrect[q.id]) mistakes.push(`📐 语法：${q.text} —— 正确答案：${q.answer}`); });
+        DATA.vocab.forEach((item, idx) => {
+            if (!state.vocabCorrect[idx]) {
+                const userChoice = state.vocabSelections[idx] || '未选';
+                mistakes.push(`📚 生词：${item.word} —— 你选了“${userChoice}”，正确应为“${item.pinyin}”`);
+            }
+        });
+
+        let pronHtml = '';
+        const valid = state.pronErrors.filter(p => p.wrongChar.trim() || p.correctPinyin.trim());
+        if (valid.length) {
+            pronHtml = `<h4 style="margin-top:16px;">🎤 智言纠音记录</h4><ul class="mistake-list">`;
+            valid.forEach(p => {
+                const status = p.corrected ? '✅ 已改正' : '⏳ 待改正';
+                pronHtml += `<li>读错字：<strong>${p.wrongChar || '未填'}</strong> 正确读音：<strong>${p.correctPinyin || '未填'}</strong> 标红 ${p.redCount || 1} 次 — ${status}</li>`;
+            });
+            pronHtml += `</ul>`;
+        }
+
+        let advice = '';
+        const rate = total / max;
+        if (rate >= 0.9) advice = '🌟 非常优秀！你对“比”字句和课文掌握得很好。';
+        else if (rate >= 0.7) advice = '👍 表现不错！建议复习错题，强化“得”的用法。';
+        else if (rate >= 0.5) advice = '📖 需要加强！建议重读课文和语法注释。';
+        else advice = '💪 别灰心！先巩固生词，再练习句型。';
+
+        let html = `
+            <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;border-bottom:1px solid #edf2f7;padding-bottom:16px;">
+                <div><span style="font-weight:600;">姓名：</span>${name}</div>
+                <div><span style="font-weight:600;">班级：</span>${cls}</div>
+                <div><span style="font-weight:600;">日期：</span>${date}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:20px;margin:16px 0;">
+                <div class="score-big">${total} <small>/ ${max}</small></div>
+                <div style="font-size:16px;">${advice}</div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-item"><div class="num">${textScore}/${DATA.textQuestions.length}</div><div class="label">📖 课文</div></div>
+                <div class="stat-item"><div class="num">${vocabScore}/${DATA.vocab.length}</div><div class="label">📚 生词</div></div>
+                <div class="stat-item"><div class="num">${grammarScore}/${DATA.grammarItems.length}</div><div class="label">📐 语法</div></div>
+            </div>
+            <div style="margin-top:16px;">
+                <h4 style="display:flex;gap:8px;align-items:center;">📋 错题与建议</h4>
+                <ul class="mistake-list">
+                    ${mistakes.length ? mistakes.map(m => `<li>${m}</li>`).join('') : '<li class="good">✅ 全部正确，继续保持！</li>'}
+                    <li class="good">💡 学习建议：${advice}</li>
+                </ul>
+                ${pronHtml}
+            </div>
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid #edf2f7;font-size:14px;color:#4a5b6e;">
+                ✨ 笔记已自动保存。教师可通过“教师后台”查看全班数据。
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    // ================================================================
+    //  🚀 核心流程控制
+    // ================================================================
+    function submitAll() {
+        if (state.submitted) return;
+        // 评分
+        DATA.textQuestions.forEach(q => {
+            const user = (state.textAnswers[q.id] || '').trim();
+            state.textCorrect[q.id] = user === q.answer;
+        });
+        DATA.grammarItems.forEach(q => {
+            const user = (state.grammarAnswers[q.id] || '').trim();
+            state.grammarCorrect[q.id] = user === q.answer;
+        });
+        DATA.vocab.forEach((item, idx) => {
+            state.vocabCorrect[idx] = (state.vocabSelections[idx] || '') === item.pinyin;
+        });
+        state.submitted = true;
+        saveStudentData();
+        renderAll();
+        generateReport();
+        renderTeacherTable();
+    }
+
+    function goToStep(step) {
+        if (step < 0 || step > 5) return;
+        if (step === 5) {
+            if (!state.submitted) {
+                submitAll();
+            }
+            state.currentStep = 5;
+        } else {
+            state.currentStep = step;
+        }
+
+        document.querySelectorAll('.step-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i === state.currentStep);
+            btn.disabled = (i > state.currentStep);
+            if (i < state.currentStep) btn.classList.add('done');
+            else btn.classList.remove('done');
+        });
+        document.querySelectorAll('.panel').forEach(p => {
+            p.classList.toggle('active', parseInt(p.dataset.step) === state.currentStep);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        renderAll();
+        if (state.currentStep === 5) generateReport();
+        if (state.currentStep === 0) renderTeacherTable();
+    }
+
+    function renderAll() {
+        renderText();
+        renderVocab();
+        renderGrammar();
+        renderPron();
+        const badge = document.getElementById('studentBadge');
+        if (state.student.name) badge.textContent = `👤 ${state.student.name} (${state.student.class})`;
+        else badge.textContent = '👤 未登录';
+    }
+
+    // ================================================================
+    //  🔄 重置
+    // ================================================================
+    function resetAll() {
+        if (!confirm('重置将清除当前所有进度，确定吗？')) return;
+        state.textAnswers = {};
+        state.textCorrect = {};
+        state.vocabSelections = {};
+        state.vocabCorrect = {};
+        state.grammarAnswers = {};
+        state.grammarCorrect = {};
+        state.pronErrors = [];
+        state.submitted = false;
+        state.currentStep = 0;
+        goToStep(0);
+    }
+
+    // ================================================================
+    //  🚀 启动
+    // ================================================================
+    function startPractice() {
+        const name = document.getElementById('studentName').value.trim();
+        const cls = document.getElementById('studentClass').value.trim();
+        const date = document.getElementById('studentDate').value;
+        if (!name) { alert('请输入姓名'); return; }
+        state.student.name = name;
+        state.student.class = cls || 'CLT004';
+        state.student.date = date || new Date().toISOString().slice(0, 10);
+        goToStep(1);
+    }
+
+    function toggleTeacher() {
+        const panel = document.getElementById('teacherPanel');
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) renderTeacherTable();
+    }
+
+    function exportCSV() {
+        const data = loadAllStudents();
+        if (!data.length) { alert('暂无数据'); return; }
+        let csv = '姓名,班级,日期,课文,生词,语法,纠音数,总分\n';
+        data.forEach(d => {
+            csv += `${d.name},${d.class},${d.date},${d.scores.text},${d.scores.vocab},${d.scores.grammar},${d.pronCount},${d.total}\n`;
+        });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = '学生成绩数据.csv';
+        link.click();
+    }
+
+    // ================================================================
+    //  🚀 初始化
+    // ================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('studentDate');
+        dateInput.value = new Date().toISOString().slice(0, 10);
+        state.currentStep = 0;
+        renderAll();
+        goToStep(0);
+    });
+</script>
+</body>
+</html>
