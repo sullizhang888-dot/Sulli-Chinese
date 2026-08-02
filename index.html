@@ -658,53 +658,6 @@
             padding-top: 16px;
             border-top: 1px solid #f1f5f9;
         }
-        /* ===== 音频可视化 ===== */
-        .audio-visual {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            height: 48px;
-            margin-bottom: 12px;
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 8px 16px;
-        }
-        .audio-visual.active {
-            display: flex;
-        }
-        .audio-visual .bar {
-            width: 4px;
-            height: 8px;
-            background: #3b82f6;
-            border-radius: 2px;
-            animation: none;
-        }
-        .audio-visual.animating .bar {
-            animation: soundbar 0.4s ease-in-out infinite alternate;
-        }
-        .audio-visual .bar:nth-child(1) { animation-delay: 0s; }
-        .audio-visual .bar:nth-child(2) { animation-delay: 0.1s; }
-        .audio-visual .bar:nth-child(3) { animation-delay: 0.2s; }
-        .audio-visual .bar:nth-child(4) { animation-delay: 0.15s; }
-        .audio-visual .bar:nth-child(5) { animation-delay: 0.05s; }
-        .audio-visual .bar:nth-child(6) { animation-delay: 0.25s; }
-        .audio-visual .bar:nth-child(7) { animation-delay: 0.1s; }
-        .audio-visual .bar:nth-child(8) { animation-delay: 0.2s; }
-        .audio-visual .bar:nth-child(9) { animation-delay: 0.05s; }
-        .audio-visual .bar:nth-child(10) { animation-delay: 0.15s; }
-        @keyframes soundbar {
-            from { height: 8px; opacity: 0.5; }
-            to { height: 36px; opacity: 1; }
-        }
-        #audioPlayer {
-            width: 100%;
-            margin-top: 8px;
-            display: none;
-        }
-        #audioPlayer.visible {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -756,12 +709,6 @@
 
             <!-- 结果 -->
             <div class="result-area" id="resultArea">
-                <div class="audio-visual" id="audioVisual">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
                 <div class="result-placeholder" id="placeholder">
                     <div class="icon">🎤</div>
                     <p>输入内容后点击「开始录音」，系统将评估你的发音<br/>(Input text and click "Start Recording" to evaluate)</p>
@@ -769,7 +716,6 @@
                 <div class="result-card hidden" id="resultCard">
                     <!-- 动态填充 -->
                 </div>
-                <audio id="audioPlayer" controls></audio>
             </div>
 
         </div>
@@ -1279,15 +1225,8 @@
 
                 navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 44100 } })
                     .then(stream => {
-                        // 播放实时音频（可选，用于波形显示）
-                        const audioPlayer = document.getElementById('audioPlayer');
-                        audioPlayer.src = URL.createObjectURL(stream);
-                        audioPlayer.classList.add('visible');
-                        audioPlayer.play().catch(() => {});
-
-                        // 停止演示流
+                        // 获取权限后立即释放，SpeechRecognition 会独立建立自己的音频连接
                         stream.getTracks().forEach(track => track.stop());
-
                         if (!recognition) {
                             recognition = initSpeech();
                             if (!recognition) {
@@ -1323,7 +1262,6 @@
                 btnRecord.disabled = true;
                 btnRecord.innerHTML = '<span class="icon">⏳</span> 请说话... (Speak now...)';
                 statusBadge.classList.remove('hidden');
-                document.getElementById('audioVisual').classList.add('active', 'animating');
 
                 placeholder.classList.add('hidden');
                 resultCard.classList.add('hidden');
@@ -1383,7 +1321,6 @@
                 btnRecord.disabled = false;
                 btnRecord.innerHTML = '<span class="icon">🎙️</span> 开始录音 (Start)';
                 statusBadge.classList.add('hidden');
-                document.getElementById('audioVisual').classList.remove('active', 'animating');
                 // 只在尚未停止时调用 stop，避免重复触发 onend
                 if (recognition && recognition.state === 'running') {
                     try { recognition.stop(); } catch (e) {}
@@ -1497,9 +1434,6 @@
                 placeholder.querySelector('.icon').textContent = '🎤';
                 btnReport.disabled = true;
                 btnPlay.disabled = true;
-                const audioPlayer = document.getElementById('audioPlayer');
-                if (audioPlayer) { audioPlayer.classList.remove('visible'); audioPlayer.src = ''; }
-                document.getElementById('audioVisual').classList.remove('active', 'animating');
                 // 保留输入内容不清空，但清空标记? 留空吧，用户自己决定
                 // 我们不重置标记框，以免用户辛苦输入的内容丢失
             }
